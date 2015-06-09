@@ -165,7 +165,6 @@ class Converter:
 class MappingWindow(q.QDialog):
     def __init__(self, parent=None):
         q.QDialog.__init__(self, parent)
-        self.setModal(True)
         self.setWindowTitle('Mappings')
         self.resize(600, 400)
         self.webview = qw.QWebView()
