@@ -30,7 +30,32 @@ class Converter:
         'C': {'r': '\u099B'},
         'j': {'r': '\u099C'},
         'J': {'r': '\u099D'},
-        'n2': {'r': '\u099E'}
+        'n2': {'r': '\u099E'},
+        't': {'r': '\u099F'},
+        'T': {'r': '\u09A0'},
+        'd': {'r': '\u09A1'},
+        'D': {'r': '\u09A2'},
+        'N': {'r': '\u09A3'},
+        't1': {'r': '\u09A4'},
+        'T1': {'r': '\u09A5'},
+        'd1': {'r': '\u09A6'},
+        'D1': {'r': '\u09A7'},
+        'n': {'r': '\u09A8'},
+        'p': {'r': '\u09AA'},
+        'P': {'r': '\u09AB'},
+        'b': {'r': '\u09AC'},
+        'B': {'r': '\u09AD'},
+        'm': {'r': '\u09AE'},
+        'z': {'r': '\u09AF'},
+        'r': {'r': '\u09B0'},
+        'l': {'r': '\u09B2'},
+        'S': {'r': '\u09B6'},
+        's1': {'r': '\u09B7'},
+        's': {'r': '\u09B8'},
+        'h': {'r': '\u09B9'},
+        'R': {'r': '\u09DC'},
+        'r1': {'r': '\u09DD'},
+        'y': {'r': '\u09DF'}
     }
 
     def convert(self, frms):
@@ -79,10 +104,9 @@ class Converter:
                 skipped = False
                 continue
             c = frms[i]
-            if c == 'n' and i < len(frms) - 1:
-                if frms[i+1] in '1234567890':
-                    c += frms[i+1]
-                    skipped = True
+            if i < (len(frms) - 1) and (frms[i+1] in '1234567890'):
+                c += frms[i+1]
+                skipped = True
             if self.isconsonant(c):
                 if i > 0:
                     stk.append('\u09CD')
