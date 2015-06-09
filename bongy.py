@@ -4,12 +4,45 @@ Under MIT License. Please see accompanying LICENSE document.
 
 import sys
 from PyQt4 import QtGui as q
+from PyQt4 import QtWebKit as qw
 import PyQt4.QtCore as qcore
 import re
 
 
 class Converter:
     ignore_list = [r' ,.;?\'\"[]{}()']
+    html_template = '''
+        <!doctype html>
+        <html>
+        <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <style>
+                td {{
+                    position: relative;
+                    display: block;
+                    width: 60px;
+                    height: 20px;
+                    margin: 4px;
+                    padding: 4px;
+                    float: left;
+                    text-align: center;
+                }}
+
+                .border {{
+                    border: 1px solid black;
+                    border-radius: 4px;
+                }}
+            </style>
+        </head>
+        <body>
+            <center>
+            <table>
+                {0}
+            </table>
+            </center>
+        </body>
+        </html>
+    '''
     char_maps = {
         'a': {'r': '\u0985', 'm': '\u0985'},
         'A': {'r': '\u0986', 'm': '\u09BE'},
@@ -117,6 +150,34 @@ class Converter:
                 stk.append(c)
         return ''.join(stk)
 
+    def gen_mapping(self):
+        content = ''
+        for l, m in sorted(self.char_maps.items()):
+            content += '''
+                <tr>
+                    <td class="border">{0}</td>
+                    <td>{1}</td>
+                    <td>{2}</td>
+                </tr>'''.format(l, m['r'], m['m'] if 'm' in m else '')
+        return self.html_template.format(content)
+
+
+class MappingWindow(q.QDialog):
+    def __init__(self, parent=None):
+        q.QDialog.__init__(self, parent)
+        self.setModal(True)
+        self.setWindowTitle('Mappings')
+        self.resize(600, 400)
+        self.webview = qw.QWebView()
+        hbox = q.QHBoxLayout()
+        hbox.addWidget(self.webview)
+        self.setLayout(hbox)
+
+    def add_html(self, html):
+        self.webview.setContent(html)
+
+    def show(self):
+        self.showMaximized()
 
 class App(q.QWidget):
     converted = qcore.pyqtSignal()
@@ -139,6 +200,18 @@ class App(q.QWidget):
             self.clipboard.setText(text)
             self.to.setText('')
 
+    @qcore.pyqtSlot()
+    def show_mapping(self):
+        mapw = MappingWindow(self)
+        mapw.add_html(self.cobj.gen_mapping().encode('utf-8'))
+        mapw.show()
+
+    @qcore.pyqtSlot()
+    def slot_convert(self):
+        txt = self.frm.toPlainText()
+        self.to.setText(self.cobj.convert(txt))
+        self.converted.emit()
+
     def __init__(self, clipboard=None):
         q.QWidget.__init__(self)
         self.resize(600, 200)
@@ -150,13 +223,12 @@ class App(q.QWidget):
         self.to.setFont(q.QFont('Courier', 12))
         self.to.setReadOnly(True)
         self.convert = q.QPushButton('Convert')
-        self.convert.setFixedWidth(80)
+        self.convert.setFixedWidth(100)
         self.clearbutton = q.QPushButton('Clear')
-        #self.clearbutton.setFixedWidth(40)
         self.copybutton = q.QPushButton('Copy')
-        #self.copybutton.setFixedSize(40, 30)
         self.cutbutton = q.QPushButton('Cut')
-        #self.cutbutton.setFixedWidth(40)
+        self.mapbutton = q.QPushButton('Mappings')
+        self.mapbutton.setFixedWidth(100)
 
         # Clipboard
         if clipboard is not None:
@@ -180,6 +252,7 @@ class App(q.QWidget):
         vbox = q.QVBoxLayout()
         hbox.addWidget(self.frm)
         hbox.addLayout(vbox3)
+        hbox2.addWidget(self.mapbutton)
         hbox2.addWidget(self.convert)
         vbox.addLayout(hbox)
         vbox.addLayout(hbox2)
@@ -190,15 +263,10 @@ class App(q.QWidget):
         self.clearbutton.clicked.connect(self.clear)
         self.copybutton.clicked.connect(self.copy)
         self.cutbutton.clicked.connect(self.cut)
+        self.mapbutton.clicked.connect(self.show_mapping)
 
         # Create the converter
         self.cobj = Converter()
-
-    @qcore.pyqtSlot()
-    def slot_convert(self):
-        txt = self.frm.toPlainText()
-        self.to.setText(self.cobj.convert(txt))
-        self.converted.emit()
 
 if __name__ == '__main__':
     qapp = q.QApplication(sys.argv)
