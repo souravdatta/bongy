@@ -121,12 +121,6 @@ class Converter:
 class App(q.QWidget):
     converted = qcore.pyqtSignal()
 
-    bstyle = '''
-        background-color: rgba(230, 230, 230, 75%);
-        border: 1px solid black;
-        border-radius: 5px;
-    '''
-
     @qcore.pyqtSlot()
     def clear(self):
         self.to.setText('')
@@ -155,17 +149,14 @@ class App(q.QWidget):
         self.to = q.QTextEdit()
         self.to.setFont(q.QFont('Courier', 12))
         self.to.setReadOnly(True)
-        self.convert = q.QPushButton('Convert >>')
+        self.convert = q.QPushButton('Convert')
         self.convert.setFixedWidth(80)
         self.clearbutton = q.QPushButton('Clear')
-        self.clearbutton.setStyleSheet(self.bstyle)
-        self.clearbutton.setFixedWidth(40)
+        #self.clearbutton.setFixedWidth(40)
         self.copybutton = q.QPushButton('Copy')
-        self.copybutton.setStyleSheet(self.bstyle)
-        self.copybutton.setFixedWidth(40)
+        #self.copybutton.setFixedSize(40, 30)
         self.cutbutton = q.QPushButton('Cut')
-        self.cutbutton.setStyleSheet(self.bstyle)
-        self.cutbutton.setFixedWidth(40)
+        #self.cutbutton.setFixedWidth(40)
 
         # Clipboard
         if clipboard is not None:
