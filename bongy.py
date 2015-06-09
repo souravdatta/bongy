@@ -1,3 +1,7 @@
+'''
+Under MIT License. Please see accompanying LICENSE document.
+'''
+
 import sys
 from PyQt4 import QtGui as q
 import PyQt4.QtCore as qcore
