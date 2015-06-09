@@ -17,21 +17,30 @@ class Converter:
         'E': {'r': '\u0990', 'm': '\u09C8'},
         'o': {'r': '\u0993', 'm': '\u09CB'},
         'O': {'r': '\u0994', 'm': '\u09CC'},
-        'm': {'r': '\u09AE'},
-        'r': {'r': '\u09B0'},
-
+        'k': {'r': '\u0995'},
+        'K': {'r': '\u0996'},
+        'g': {'r': '\u0997'},
+        'G': {'r': '\u0998'},
+        'n1': {'r': '\u0999'},
+        'c': {'r': '\u099A'},
+        'C': {'r': '\u099B'},
+        'j': {'r': '\u099C'},
+        'J': {'r': '\u099D'},
+        'n2': {'r': '\u099E'}
     }
 
     def convert(self, frms):
-        parts = re.findall(r'(\{.+?\})|(.)', frms)
+        parts = re.findall(r'(\{.+?\})|(\w\d)|(.)', frms)
         rparts = []
         for p in parts:
-            if p[0] == '' and p[1] != '':
-                rparts.append(p[1])
-            elif p[0] != '' and p[1] == '':
+            if p[0] != '':
                 rparts.append(p[0])
+            elif p[1] != '':
+                rparts.append(p[1])
+            elif p[2] != '':
+                rparts.append(p[2])
             else:
-                rparts.append(p[0]+ p[1])
+                rparts.append(p[0]+ p[1] + p[2])
         convs = ''
         for i in rparts:
             gs = re.search(r'^\{(.*?)\}$', i)
