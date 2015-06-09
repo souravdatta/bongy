@@ -73,8 +73,16 @@ class Converter:
 
     def convert_compound(self, frms):
         stk = []
+        skipped = False
         for i in range(0, len(frms)):
+            if skipped:
+                skipped = False
+                continue
             c = frms[i]
+            if c == 'n' and i < len(frms) - 1:
+                if frms[i+1] in '1234567890':
+                    c += frms[i+1]
+                    skipped = True
             if self.isconsonant(c):
                 if i > 0:
                     stk.append('\u09CD')
