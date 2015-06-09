@@ -9,8 +9,17 @@ class Converter:
     char_maps = {
         'a': {'r': '\u0985', 'm': '\u0985'},
         'A': {'r': '\u0986', 'm': '\u09BE'},
-        'm': {'r': '\u09AE', 'm': '\u09AE'},
-        'r': {'r': '\u09B0', 'm': '\u09B0'}
+        'i': {'r': '\u0987', 'm': '\u09BF'},
+        'I': {'r': '\u0988', 'm': '\u09C0'},
+        'u': {'r': '\u0989', 'm': '\u09C1'},
+        'U': {'r': '\u098A', 'm': '\u09C2'},
+        'e': {'r': '\u098F', 'm': '\u09C7'},
+        'E': {'r': '\u0990', 'm': '\u09C8'},
+        'o': {'r': '\u0993', 'm': '\u09CB'},
+        'O': {'r': '\u0994', 'm': '\u09CC'},
+        'm': {'r': '\u09AE'},
+        'r': {'r': '\u09B0'},
+
     }
 
     def convert(self, frms):
@@ -77,7 +86,21 @@ class App(q.QWidget):
     def clear(self):
         self.to.setText('')
 
-    def __init__(self):
+    @qcore.pyqtSlot()
+    def copy(self):
+        text = self.to.toPlainText()
+        if self.clipboard is not None:
+            self.clipboard.setText(text)
+            self.to.setFocus()
+
+    @qcore.pyqtSlot()
+    def cut(self):
+        text = self.to.toPlainText()
+        if self.clipboard is not None:
+            self.clipboard.setText(text)
+            self.to.setText('')
+
+    def __init__(self, clipboard=None):
         q.QWidget.__init__(self)
         self.resize(600, 200)
         self.setWindowTitle('Convert-R')
@@ -91,11 +114,17 @@ class App(q.QWidget):
         self.convert.setFixedWidth(80)
         self.clearbutton = q.QPushButton('Clear')
         self.clearbutton.setStyleSheet(self.bstyle)
-        self.clearbutton.clicked.connect(self.clear)
+        self.clearbutton.setFixedWidth(40)
         self.copybutton = q.QPushButton('Copy')
         self.copybutton.setStyleSheet(self.bstyle)
+        self.copybutton.setFixedWidth(40)
         self.cutbutton = q.QPushButton('Cut')
         self.cutbutton.setStyleSheet(self.bstyle)
+        self.cutbutton.setFixedWidth(40)
+
+        # Clipboard
+        if clipboard is not None:
+            self.clipboard = clipboard
 
         # Layouts
         hbox = q.QHBoxLayout()
@@ -122,6 +151,9 @@ class App(q.QWidget):
 
         # Connections
         self.convert.clicked.connect(self.slot_convert)
+        self.clearbutton.clicked.connect(self.clear)
+        self.copybutton.clicked.connect(self.copy)
+        self.cutbutton.clicked.connect(self.cut)
 
         # Create the converter
         self.cobj = Converter()
@@ -134,6 +166,6 @@ class App(q.QWidget):
 
 if __name__ == '__main__':
     qapp = q.QApplication(sys.argv)
-    app = App()
+    app = App(qapp.clipboard())
     app.show()
     sys.exit(qapp.exec())
