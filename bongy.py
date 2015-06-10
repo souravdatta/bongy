@@ -7,10 +7,10 @@ from PyQt4 import QtGui as q
 from PyQt4 import QtWebKit as qw
 import PyQt4.QtCore as qcore
 import re
+import flask
+import argparse
 
-
-class Converter:
-    ignore_list = [r' ,.;?\'\"[]{}()']
+class HTMLGen:
     html_template = '''
         <!doctype html>
         <html>
@@ -43,6 +43,21 @@ class Converter:
         </body>
         </html>
     '''
+
+    def gen_mapping_html(self, maps):
+        content = ''
+        for l, m in sorted(maps.items()):
+            content += '''
+                <tr>
+                    <td class="border">{0}</td>
+                    <td>{1}</td>
+                    <td>{2}</td>
+                </tr>'''.format(l, m['r'], m['m'] if 'm' in m else '')
+        return self.html_template.format(content)
+
+class Converter:
+    ignore_list = [r' ,.;?\'\"[]{}()']
+
     char_maps = {
         'a': {'r': '\u0985', 'm': '\u0985'},
         'A': {'r': '\u0986', 'm': '\u09BE'},
@@ -151,15 +166,8 @@ class Converter:
         return ''.join(stk)
 
     def gen_mapping(self):
-        content = ''
-        for l, m in sorted(self.char_maps.items()):
-            content += '''
-                <tr>
-                    <td class="border">{0}</td>
-                    <td>{1}</td>
-                    <td>{2}</td>
-                </tr>'''.format(l, m['r'], m['m'] if 'm' in m else '')
-        return self.html_template.format(content)
+        ghtml = HTMLGen()
+        return ghtml.gen_mapping_html(self.char_maps)
 
 
 class MappingWindow(q.QDialog):
@@ -267,8 +275,41 @@ class App(q.QWidget):
         # Create the converter
         self.cobj = Converter()
 
-if __name__ == '__main__':
+# The Web interface
+fapp = flask.Flask(__name__)
+
+@fapp.route('/api/v1/<text>')
+def api_v1(text):
+    conv = Converter()
+    return conv.convert(text)
+
+@fapp.route('/mappings')
+def api_v1_mappings():
+    conv = Converter()
+    return conv.gen_mapping()
+
+# MAIN
+
+def start_gui():
     qapp = q.QApplication(sys.argv)
     app = App(qapp.clipboard())
     app.show()
     sys.exit(qapp.exec())
+
+def start_server(port=8084):
+    fapp.run(port=port)
+
+if __name__ == '__main__':
+    aparser = argparse.ArgumentParser(description='Start bongy in server or gui mode (default is Qt gui)')
+    aparser.add_argument('-s', '--server', action='store_true', help='Start bongy is server mode with REST enabled')
+    aparser.add_argument('-g', '--gui', action='store_true', help='Start bongy in gui mode')
+    aparser.add_argument('-p', '--port', help='Specify port for the server, default 8084')
+    args = aparser.parse_args()
+    if args.server is True:
+        if args.port:
+            start_server(port=int(args.port))
+        else:
+            start_server()
+    else:
+        start_gui()
+
