@@ -9,4 +9,5 @@ Currently the server supports REST requesta
 GET /api/v1/<text> => Returns text converted to Bengali.
 GET /mappings => Returns an HTML response with mapping info.
 
-Run `python bongy.py --help` to know more.
+See it in action at: `souravdatta.pythonanywhere.com`
+
