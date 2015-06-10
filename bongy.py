@@ -2,8 +2,6 @@
 Under MIT License. Please see accompanying LICENSE document.
 '''
 import re
-import flask
-import argparse
 
 class HTMLGen:
     html_template = '''
@@ -163,37 +161,3 @@ class Converter:
     def gen_mapping(self):
         ghtml = HTMLGen()
         return ghtml.gen_mapping_html(self.char_maps)
-
-# The Web interface
-fapp = flask.Flask(__name__)
-
-@fapp.route('/')
-@fapp.route('/index')
-@fapp.route('/home')
-def index():
-    return flask.render_template('index.html')
-
-@fapp.route('/api/v1/<text>')
-def api_v1(text):
-    conv = Converter()
-    return conv.convert(text)
-
-@fapp.route('/mappings')
-def api_v1_mappings():
-    conv = Converter()
-    return conv.gen_mapping()
-
-# MAIN
-
-def start_server(port=8084):
-    fapp.run(port=port)
-
-if __name__ == '__main__':
-    aparser = argparse.ArgumentParser(description='Start bongy in server mode')
-    aparser.add_argument('-p', '--port', help='Specify port for the server, default 8084')
-    args = aparser.parse_args()
-
-    if args.port:
-        start_server(port=int(args.port))
-    else:
-        start_server()
