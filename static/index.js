@@ -5,7 +5,7 @@ Under MIT License. Please see accompanying LICENSE document.
 (function () {
     $(document).ready(function () {
         $('#converter').click(function (){
-            var text = $('#eng').val();
+            var text = $('#eng').html();
             var dest = $('#bng');
             $.ajax(
                 ('/api/v1/' + text),

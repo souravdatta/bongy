@@ -5,6 +5,7 @@ Under MIT License. Please see accompanying LICENSE document.
 <html>
 <head lang="en">
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="static/index.css"/>
     <script src="static/jquery-2.1.4.min.js"></script>
     <script src="static/index.js"></script>
@@ -12,13 +13,17 @@ Under MIT License. Please see accompanying LICENSE document.
 </head>
 <body>
     <div class="logo"><a class="logo-link" href="https://github.com/souravdatta/bongy">(B|<b>ব</b>)ongy</a> 0.0.1 (alpha) - English to Bengali converter</div>
-    <div>
-        <textarea id="eng" rows="20" cols="120"></textarea>
+    <div class="app">
+        <div class="hoverlay" contenteditable="false">English</div>
+        <div class="edit-content" id="eng" contenteditable="true">
+        </div>
         <br/>
         <button id="converter" class="btn">Convert</button>
         <button id="mapping" class="btn">Show Mappings</button>
         <br/>
-        <div id="bng" class="result"></div>
+        <div class="hoverlay" contenteditable="false">Bengali</div>
+        <div id="bng" class="result">
+        </div>
     </div>
 </body>
 </html>
