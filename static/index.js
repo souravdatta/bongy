@@ -8,7 +8,7 @@ Under MIT License. Please see accompanying LICENSE document.
         loader.addClass('hide');
 
         $('#converter').click(function (){
-            var text = $('#eng').html().trim();
+            var text = $('#eng').text().trim();
             if (text == '') return;
             var dest = $('#bng');
 
