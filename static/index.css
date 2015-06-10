@@ -114,3 +114,33 @@ textarea {
     margin-bottom: 5px;
     border-radius: 5px 5px 0px 0px;
 }
+
+.show {
+    display: block;
+}
+
+.hide {
+    display: none;
+}
+
+.loader {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    left: 0px;
+    top: 0px;
+    background-color: rgba(50, 50, 50, 0.6);
+}
+
+.loader-text {
+    display: block;
+    position: relative;
+    width: 10%;
+    height: 10%;
+    left: 40%;
+    top: 40%;
+    background: red;
+    color: white;
+    font-size: large;
+    text-align: center;
+}
