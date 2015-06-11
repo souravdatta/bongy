@@ -30,6 +30,10 @@ class HTMLGen:
         <body>
             <center>
             <table>
+                <tr>
+                    <td class="border">{{}}</td>
+                    <td>Group letters
+                </tr>
                 {0}
             </table>
             </center>
@@ -45,13 +49,19 @@ class HTMLGen:
                     <td class="border">{0}</td>
                     <td>{1}</td>
                     <td>{2}</td>
-                </tr>'''.format(l, m['r'], m['m'] if 'm' in m else '')
+                </tr>'''.format(l, m['r'] if 'r' in m else '', m['m'] if 'm' in m else '')
         return self.html_template.format(content)
 
 class Converter:
     ignore_list = [r' ,.;?\'\"[]{}()']
 
     char_maps = {
+        'a1': {'m': '\u0981'},
+        'a2': {'m': '\u0982'},
+        'a3': {'m': '\u0983'},
+        'a4': {'m': '\u09C3'},
+        'a5': {'m': '\u09F4'},
+        'a6': {'m': '\u09CD\u09AF'},
         'a': {'r': '\u0985', 'm': '\u0985'},
         'A': {'r': '\u0986', 'm': '\u09BE'},
         'i': {'r': '\u0987', 'm': '\u09BF'},
@@ -89,6 +99,7 @@ class Converter:
         'm': {'r': '\u09AE'},
         'z': {'r': '\u09AF'},
         'r': {'r': '\u09B0'},
+        'R': {'r': '\u09E0'},
         'l': {'r': '\u09B2'},
         'S': {'r': '\u09B6'},
         's1': {'r': '\u09B7'},
@@ -96,7 +107,9 @@ class Converter:
         'h': {'r': '\u09B9'},
         'R': {'r': '\u09DC'},
         'r1': {'r': '\u09DD'},
-        'y': {'r': '\u09DF'}
+        'y': {'r': '\u09DF'},
+        'n3': {'r': '\u09FA'},
+        't2': {'r': '\u09CE'}
     }
 
     def convert(self, frms):
@@ -129,8 +142,8 @@ class Converter:
     def isconsonant(self, c):
         return self.isword(c) and re.match(r'[^aeiou]', c, re.I) is not None
 
-    def isvowel(self, c):
-        return not self.isconsonant(c)
+    def iscomposer(self, c):
+        return (c in self.char_maps) and (re.match(r'[aeiou][0-9]?', c, re.I))
 
     def lookup(self, c, m=False):
         if c in self.char_maps:
@@ -152,8 +165,10 @@ class Converter:
                 if i > 0:
                     stk.append('\u09CD')
                 stk.append(self.lookup(c))
-            elif self.isvowel(c):
+            elif self.iscomposer(c) and (i > 0):
                 stk.append(self.lookup(c, m=True))
+            elif self.iscomposer(c) and (i == 0):
+                stk.append(self.lookup(c))
             else:
                 stk.append(c)
         return ''.join(stk)
